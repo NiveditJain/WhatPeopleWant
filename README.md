@@ -33,4 +33,4 @@ Built, hosted, and sponsored by [exosphere.host](https://exosphere.host)
 
 ---
 
-Made with ❤️ by builder for builder
+Made with ❤️ by builders for builders
