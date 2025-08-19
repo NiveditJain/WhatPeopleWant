@@ -104,15 +104,15 @@ wheels = [
 
 [[package]]
 name = "exospherehost"
-version = "0.0.7b7"
+version = "0.0.7b8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d9/46/15480907fd6bafcd26c2f3922198fe43c708cb256ee8a50c4e2dbd5951dd/exospherehost-0.0.7b7.tar.gz", hash = "sha256:43962bf807ebc74cf0f6f7dae0a992c5be3c630205fe14ebc6508cf5e3f774bc", size = 17076, upload-time = "2025-08-17T11:50:13.971Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/17/66/ff91b0e275c95fe4638b1ff7834f5fdacc51e30f983ae38aafc7dfa018dc/exospherehost-0.0.7b8.tar.gz", hash = "sha256:f2a2b963d16076443a2c9c409b582d26571740dbb78e8b0dfbfc21279b229d1f", size = 17031, upload-time = "2025-08-18T18:31:35.523Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/63/d04193a7f97bd96afd6ed2f5233d4a5e889f3a93550194e5e2113e73a1fc/exospherehost-0.0.7b7-py3-none-any.whl", hash = "sha256:8de6ab74b86e11d52c16c77d1c30a0bd93a2e20dbdf05bbfc840bbce07f7e462", size = 14652, upload-time = "2025-08-17T11:50:12.831Z" },
+    { url = "https://files.pythonhosted.org/packages/25/8a/5a4ae460e4e12cb305b9a3310dab11b75aa2b25f68f003b3cd1fa5938c47/exospherehost-0.0.7b8-py3-none-any.whl", hash = "sha256:32eeee8d071489d34b278988c23bcf14c763423f379f0aa59504650cc715c46b", size = 14655, upload-time = "2025-08-18T18:31:34.546Z" },
 ]
 
 [[package]]
