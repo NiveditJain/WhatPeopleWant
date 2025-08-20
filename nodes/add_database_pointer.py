@@ -1,8 +1,8 @@
-import os
-from pymongo import AsyncMongoClient
 from dotenv import load_dotenv
 from exospherehost import BaseNode
 from pydantic import BaseModel
+from datetime import datetime
+from .utils import get_mongo_client
 
 DATABASE_NAME = "WhatPeopleWant"
 COLLECTION_NAME = "runs"
@@ -18,7 +18,7 @@ class AddDatabasePointerNode(BaseNode):
         end_id: str
 
     async def execute(self) -> Outputs:
-        client = AsyncMongoClient(os.getenv("MONGO_URI"))
+        client = get_mongo_client()
         db = client[DATABASE_NAME]
         collection = db[COLLECTION_NAME]
 
@@ -30,7 +30,8 @@ class AddDatabasePointerNode(BaseNode):
 
         await collection.insert_one({
             "end_id": int(self.inputs.item_id),
-            "start_id": start_id
+            "start_id": start_id,
+            "created_at": datetime.now()
         })
 
         return self.Outputs(start_id=str(start_id), end_id=str(self.inputs.item_id))

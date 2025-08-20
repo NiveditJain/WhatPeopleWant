@@ -1,9 +1,8 @@
-import os
 from aiohttp import ClientSession
 from exospherehost import BaseNode
 from pydantic import BaseModel
-from pymongo import AsyncMongoClient
 from dotenv import load_dotenv
+from .utils import get_mongo_client
 
 load_dotenv()
 
@@ -16,7 +15,7 @@ async def get_item_from_hacker_news(item_id: int) -> dict:
             return await response.json()
 
 async def add_item_to_database(item_id: int, item: dict) -> str:
-    client = AsyncMongoClient(os.getenv("MONGO_URI"))
+    client = get_mongo_client()
     db = client[DATABASE_NAME]
     collection = db[COLLECTION_NAME]
     inserted_id = (await collection.insert_one({
