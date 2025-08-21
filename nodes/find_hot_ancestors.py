@@ -58,11 +58,3 @@ class FindHotAncestors(BaseNode):
             self.Outputs(ancestor_id=str(ancestor_id["_id"]))
             for ancestor_id in hot_ancestor_ids
         ]
-    
-import asyncio
-
-async def main():
-    data = await FindHotAncestors()._execute(FindHotAncestors.Inputs(start_id="1", end_id="1000000000"), FindHotAncestors.Secrets())
-    print(data)
-
-asyncio.run(main())
