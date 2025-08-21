@@ -3,7 +3,7 @@ import os
 
 from exospherehost import BaseNode
 from pydantic import BaseModel
-from utils import get_mongo_client
+from .utils import get_mongo_client
 
 
 DATABASE_NAME = "WhatPeopleWant"
