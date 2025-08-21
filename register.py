@@ -5,6 +5,9 @@ from nodes.generate_items import GenerateItemsNode
 from nodes.add_item_to_database import AddItemToDatabaseNode
 from nodes.get_max_item import GetMaxItemNode
 from nodes.add_ancestor_id import AddAncestorIdNode
+from nodes.find_hot_threads import FindHotThreadsNode
+from nodes.generate_insigt import GenerateInsightNode
+
 
 asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
     graph_name="ScrapeYC",
@@ -61,8 +64,31 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
                 "start_id": "${{AddDatabasePointer.outputs.start_id}}",
                 "end_id": "${{AddDatabasePointer.outputs.end_id}}"
             },
-            "next_nodes": [],
+            "next_nodes": [
+                "FindHotThreads"
+            ],
             "unites": { "identifier": "AddDatabasePointer" }
+        },
+        {
+            "node_name": FindHotThreadsNode.__name__,
+            "identifier": "FindHotThreads",
+            "namespace": "WhatPeopleWant",
+            "inputs": {
+                "start_id": "${{AddDatabasePointer.outputs.start_id}}",
+                "end_id": "${{AddDatabasePointer.outputs.end_id}}"
+            },
+            "next_nodes": [
+                "GenerateInsight"
+            ]
+        },
+        {
+            "node_name": GenerateInsightNode.__name__,
+            "identifier": "GenerateInsight",
+            "namespace": "WhatPeopleWant",
+            "inputs": {
+                "thread_id": "${{FindHotThreads.outputs.thread_id}}"
+            },
+            "next_nodes": []
         }
     ]
 ))

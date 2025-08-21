@@ -1,18 +1,18 @@
 from exospherehost import BaseNode
 from pydantic import BaseModel
-from utils import get_mongo_client
+from .utils import get_mongo_client
 
 DATABASE_NAME = "WhatPeopleWant"
 COLLECTION_NAME = "items"
-HOT_THRESHOLD = 3
+HOT_THRESHOLD = 5
 
-class FindHotAncestors(BaseNode):
+class FindHotThreadsNode(BaseNode):
     class Inputs(BaseModel):
         start_id: str
         end_id: str
 
     class Outputs(BaseModel):
-        ancestor_id: str
+        thread_id: str
 
     async def execute(self) -> Outputs:
         client = get_mongo_client()
@@ -55,6 +55,6 @@ class FindHotAncestors(BaseNode):
             ]
         )).to_list()
         return [
-            self.Outputs(ancestor_id=str(ancestor_id["_id"]))
+            self.Outputs(thread_id=str(ancestor_id["_id"]))
             for ancestor_id in hot_ancestor_ids
         ]
