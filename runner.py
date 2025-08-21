@@ -3,6 +3,7 @@ from nodes.add_database_pointer import AddDatabasePointerNode
 from nodes.generate_items import GenerateItemsNode
 from nodes.add_item_to_database import AddItemToDatabaseNode
 from nodes.get_max_item import GetMaxItemNode
+from nodes.add_ancestor_id import AddAncestorIdNode
 
 Runtime(
     namespace="WhatPeopleWant",
@@ -11,6 +12,7 @@ Runtime(
         AddDatabasePointerNode,
         GenerateItemsNode,
         AddItemToDatabaseNode,
-        GetMaxItemNode
+        GetMaxItemNode,
+        AddAncestorIdNode
     ]
 ).start()

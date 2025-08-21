@@ -4,6 +4,7 @@ from nodes.add_database_pointer import AddDatabasePointerNode
 from nodes.generate_items import GenerateItemsNode
 from nodes.add_item_to_database import AddItemToDatabaseNode
 from nodes.get_max_item import GetMaxItemNode
+from nodes.add_ancestor_id import AddAncestorIdNode
 
 asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
     graph_name="ScrapeYC",
@@ -48,7 +49,24 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
             "inputs": {
                 "item_id": "${{GenerateItems.outputs.item_id}}"
             },
-            "next_nodes": []
+            "next_nodes": [
+                "AddAncestorId"
+            ]
+        },
+        {
+            "node_name": AddAncestorIdNode.__name__,
+            "identifier": "AddAncestorId",
+            "namespace": "WhatPeopleWant",
+            "inputs": {
+                "start_id": "${{AddDatabasePointer.outputs.start_id}}",
+                "end_id": "${{AddDatabasePointer.outputs.end_id}}"
+            },
+            "next_nodes": [],
+            "unites": [
+                {
+                    "identifier": "AddDatabasePointer"
+                }
+            ]
         }
     ]
 ))
