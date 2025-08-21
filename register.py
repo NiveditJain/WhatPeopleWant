@@ -62,11 +62,7 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
                 "end_id": "${{AddDatabasePointer.outputs.end_id}}"
             },
             "next_nodes": [],
-            "unites": [
-                {
-                    "identifier": "AddDatabasePointer"
-                }
-            ]
+            "unites": { "identifier": "AddDatabasePointer" }
         }
     ]
 ))
