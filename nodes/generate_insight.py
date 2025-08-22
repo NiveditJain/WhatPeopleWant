@@ -1,5 +1,6 @@
 import openai
 import os
+import json
 
 from exospherehost import BaseNode
 from pydantic import BaseModel
@@ -35,7 +36,7 @@ You are an entrepreneur-analyst. Your task is to study the attached forum conver
 """
 
 def generate_prompt(message):
-    return PROMPT.format(message=message)
+    return PROMPT.format(conversation=json.dumps(message, indent=2, ensure_ascii=False))
 
 class GenerateInsightNode(BaseNode):
     class Inputs(BaseModel):
@@ -45,73 +46,88 @@ class GenerateInsightNode(BaseNode):
         insight: str
 
     async def execute(self) -> Outputs:
-        client = get_mongo_client()
-        db = client[DATABASE_NAME]
-        collection = db[COLLECTION_NAME]
+        try:
+            client = get_mongo_client()
+            db = client[DATABASE_NAME]
+            collection = db[COLLECTION_NAME]
 
-        thread_id = int(self.inputs.thread_id)
-        thread_data = await(await collection.aggregate(
-            [
-                {
-                    "$match": {
-                        "item_id": thread_id
+            thread_id = int(self.inputs.thread_id)
+            thread_data = await(await collection.aggregate(
+                [
+                    {
+                        "$match": {
+                            "item_id": thread_id
+                        }
+                    },
+                    {
+                        "$graphLookup": {
+                            "from": COLLECTION_NAME,
+                            "startWith": "$kids",
+                            "connectFromField": "kids",
+                            "connectToField": "item_id",
+                            "as": "replies",
+                            "depthField": "level"
+                        }
+                    },
+                    {
+                        "$project": {
+                            "_id": 0,
+                            "item_id": 1,
+                            "text": 1,
+                            "kids": 1,
+                            "title": 1,
+                            "replies.item_id": 1,
+                            "replies.text": 1,
+                            "replies.title": 1,
+                            "replies.level": 1,
+                            "replies.kids": 1
+                        }
                     }
-                },
-                {
-                    "$graphLookup": {
-                        "from": COLLECTION_NAME,
-                        "startWith": "$kids",
-                        "connectFromField": "kids",
-                        "connectToField": "item_id",
-                        "as": "replies",
-                        "depthField": "level"
-                    }
-                },
-                {
-                    "$project": {
-                        "item_id": 1,
-                        "text": 1,
-                        "kids": 1,
-                        "replies.item_id": 1,
-                        "replies.text": 1,
-                        "replies.level": 1
-                    }
-                }
-            ]
-        )).to_list()
+                ]
+            )).to_list()
 
-        look_up_table = {}
-        for item in thread_data[0]["replies"]:
-            look_up_table[item["item_id"]] = item
+            look_up_table = {}
+            for item in thread_data[0]["replies"]:
+                look_up_table[item["item_id"]] = item
 
-        def dfs(item_id):
-            item = look_up_table[item_id]
-            message = {
-                "text": item["text"]
-            }
+            look_up_table[thread_id] = thread_data[0].copy()
+            look_up_table[thread_id].pop("replies")
 
-            replies = []
-            for reply in item["replies"]:
-                replies.append(dfs(reply["item_id"]))
-            
-            if len(replies) > 0:
-                message["replies"] = replies
+            def dfs(item_id):
+                if item_id not in look_up_table:
+                    return {}
                 
-            return message
-        
-        message = dfs(thread_id)
-
-        client = openai.AsyncOpenAI(
-            api_key=os.getenv("IO_NET_INFERENCE_KEY"),
-            base_url="https://api.intelligence.io.solutions/api/v1/"
-        )
-        reponse = await client.chat.completions.create(
-            model="Qwen3-235B-A22B-Thinking-2507",
-            messages=[
-                {
-                    "role": "user",
-                    "content": generate_prompt(message)
+                item = look_up_table[item_id]
+                message = {
+                    "text": item["text"] if "text" in item else item["title"] if "title" in item else None
                 }
-            ]
-        )
-        return self.Outputs(insight=reponse.choices[0].message.content)
+
+                replies = []
+                if "kids" in item:
+                    for reply in item["kids"]:
+                        replies.append(dfs(reply))
+                    
+                if len(replies) > 0:
+                    message["replies"] = replies
+                    
+                return message
+            
+            message = dfs(thread_id)
+
+            client = openai.AsyncOpenAI(
+                api_key=os.getenv("IO_NET_INFERENCE_KEY"),
+                base_url="https://api.intelligence.io.solutions/api/v1/"
+            )
+            reponse = await client.chat.completions.create(
+                model="Qwen/Qwen3-235B-A22B-Thinking-2507",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": generate_prompt(message)
+                    }
+                ]
+            )
+            return self.Outputs(insight=reponse.choices[0].message.content)
+        
+        except Exception as _:
+            raise
