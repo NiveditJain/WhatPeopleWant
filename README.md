@@ -26,9 +26,20 @@ This project depends upon the [Hacker News API](https://github.com/HackerNews/AP
    Create a `.env` file in the project root (or set these variables in your environment) with the following keys:
 
    ```
+   MONGO_URI= your_mongo_connection_string
+
    EXOSPHERE_STATE_MANAGER_URI=your_state_manager_uri
    EXOSPHERE_API_KEY=your_api_key
-   MONGO_URI=your_mongo_connection_string
+
+   OPENAI_KEY=your_openai_key
+   OPENAI_ENDPOINT=your_openai_endpoint
+
+   AWS_SES_ACCESS_KEY=your_aws_ses_access_key
+   AWS_SES_SECRET_KEY=your_aws_ses_secret_key
+   AWS_SES_REGION=your_aws_ses_region
+   AWS_SES_REGION_ENDPOINT = your_aws_ses_region_endpoint
+   AWS_SES_EMAIL = 'from@this.email'
+   TO_EMAILS = 'to1@this.email,to2@this.email,toN@this.email'
    ```
 
    Replace `your_state_manager_uri`, `your_api_key`, and `your_mongo_connection_string` with your actual credentials.
