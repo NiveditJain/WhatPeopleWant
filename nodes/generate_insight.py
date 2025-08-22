@@ -20,6 +20,8 @@ I am giving you a thread from HackerNews where people are talking, I want you to
 Output format: Give me new line separated tweets in order, I will use python string.split('\n') to get a list of tweets and post them in order. So please be sure you follow the same, nothing to be generated which is not a part of tweet. 
 
 NOTE: Be professional , do not mention people on HN just mention people. No extra text apart from tweet content. Never tell anyone in tweet that actually you are a VC analyst.
+
+Do not use long dashes —
 """
 
 def generate_prompt(message):

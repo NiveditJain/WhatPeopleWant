@@ -4,7 +4,7 @@ from .utils import get_mongo_client
 
 DATABASE_NAME = "WhatPeopleWant"
 COLLECTION_NAME = "items"
-HOT_THRESHOLD = 7
+HOT_THRESHOLD = 10
 
 class FindHotThreadsNode(BaseNode):
     class Inputs(BaseModel):

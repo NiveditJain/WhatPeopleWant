@@ -7,6 +7,7 @@ from nodes.get_max_item import GetMaxItemNode
 from nodes.add_ancestor_id import AddAncestorIdNode
 from nodes.find_hot_threads import FindHotThreadsNode
 from nodes.generate_insight import GenerateInsightNode
+from nodes.send_analysis import SendAnalysisNode
 
 
 asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
@@ -87,6 +88,18 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
             "namespace": "WhatPeopleWant",
             "inputs": {
                 "thread_id": "${{FindHotThreads.outputs.thread_id}}"
+            },
+            "next_nodes": [
+                "SendAnalysis"
+            ]
+        },
+        {
+            "node_name": SendAnalysisNode.__name__,
+            "identifier": "SendAnalysis",
+            "namespace": "WhatPeopleWant",
+            "inputs": {
+                "insight": "${{GenerateInsight.outputs.insight}}",
+                "thread_id": "${{GenerateInsight.outputs.thread_id}}"
             },
             "next_nodes": []
         }
