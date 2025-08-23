@@ -17,11 +17,11 @@ I am giving you a thread from HackerNews where people are talking, I want you to
 **CONVERSATION:**  
 {conversation}
 
-Output format: Give me new line separated tweets in order, I will use python string.split('\n') to get a list of tweets and post them in order. So please be sure you follow the same, nothing to be generated which is not a part of tweet. 
+Output format: Give me new line separated tweets in order, I will use python string.split('\n') to get a list of tweets and post them in order. So please be sure you follow the same, nothing to be generated which is not a part of tweet. First thread should be of format, People want <1-3 words>, try to be specific, less verbose and do not increase size of one tweet of the thread more than 280 characters.
 
 NOTE: Be professional , do not mention people on HN just mention people. No extra text apart from tweet content. Never tell anyone in tweet that actually you are a VC analyst.
 
-Do not use long dashes —
+Do not use long dashes — and emojis.
 """
 
 def generate_prompt(message):
