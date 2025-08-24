@@ -6,6 +6,7 @@ from .utils import get_mongo_client
 
 DATABASE_NAME = "WhatPeopleWant"
 COLLECTION_NAME = "runs"
+MAX_CAP = 10000
 
 load_dotenv()
 
@@ -24,12 +25,16 @@ class AddDatabasePointerNode(BaseNode):
 
         base_item = await collection.find_one({}, sort=[("end_id", -1)])
 
+        end_id = int(self.inputs.item_id)
         start_id = 0
         if base_item:
             start_id = int(base_item["end_id"]) + 1
+        
+        if end_id - start_id > MAX_CAP:
+            start_id = end_id - MAX_CAP
 
         await collection.insert_one({
-            "end_id": int(self.inputs.item_id),
+            "end_id": end_id,
             "start_id": start_id,
             "created_at": datetime.now()
         })

@@ -10,6 +10,71 @@ This project depends upon the [Hacker News API](https://github.com/HackerNews/AP
 
 ## Getting Started
 
+### Option 1: Docker Compose (Recommended)
+
+The easiest way to run WhatPeopleWant is using Docker Compose, which sets up all required services including MongoDB, Exosphere State Manager, and the application runners.
+
+1. **Clone the repository:**
+   ```
+   git clone https://github.com/NiveditJain/WhatPeopleWant.git
+   cd WhatPeopleWant
+   ```
+
+2. **Set up environment variables:**
+   
+   Create a `.env` file in the project root with the following variables:
+
+   ```env
+   # OpenAI Configuration
+   # Get your API key from https://platform.openai.com/api-keys
+   OPENAI_KEY=your_openai_key_here
+   # For Azure OpenAI, use your Azure endpoint URL
+   # For OpenAI, use https://api.openai.com/v1
+   OPENAI_ENDPOINT=https://api.openai.com/v1
+
+   # AWS SES Configuration (for email notifications)
+   # Get your AWS credentials from AWS IAM Console
+   AWS_SES_ACCESS_KEY=your_aws_ses_access_key_here
+   AWS_SES_SECRET_KEY=your_aws_ses_secret_key_here
+   # AWS region for SES (e.g., us-east-1, us-west-2, eu-west-1)
+   AWS_SES_REGION=us-east-1
+   # SES endpoint for your region (e.g., https://email.us-east-1.amazonaws.com)
+   AWS_SES_REGION_ENDPOINT=https://email.us-east-1.amazonaws.com
+   # Email address to send notifications from (must be verified in SES)
+   AWS_SES_EMAIL=from@yourdomain.com
+   # Comma-separated list of email addresses to receive notifications
+   TO_EMAILS=to1@yourdomain.com,to2@yourdomain.com
+   ```
+
+   **Note:** The following variables are automatically configured by Docker Compose:
+   - `MONGO_URI`: Set to connect to the MongoDB container
+   - `EXOSPHERE_STATE_MANAGER_URI`: Set to connect to the state manager container  
+   - `EXOSPHERE_API_KEY`: Set to the default API key for the state manager
+
+3. **Start the application:**
+   ```bash
+   docker-compose up -d
+   ```
+
+   This will start:
+   - MongoDB database
+   - Exosphere State Manager
+   - Exosphere Dashboard (accessible at http://localhost:3000)
+   - 4 runner instances for processing
+   - Registration and scheduler services
+
+4. **Monitor the application:**
+   ```bash
+   docker-compose logs -f
+   ```
+
+5. **Access the dashboard:**
+   Open your browser and navigate to http://localhost:3000
+
+### Option 2: Local Development
+
+For local development, you can run the application directly on your machine.
+
 1. **Clone the repository:**
    ```
    git clone https://github.com/NiveditJain/WhatPeopleWant.git
@@ -25,24 +90,36 @@ This project depends upon the [Hacker News API](https://github.com/HackerNews/AP
 
    Create a `.env` file in the project root (or set these variables in your environment) with the following keys:
 
-   ```
-   MONGO_URI= your_mongo_connection_string
+   ```env
+   # MongoDB Configuration
+   MONGO_URI=your_mongo_connection_string
 
+   # Exosphere Configuration
    EXOSPHERE_STATE_MANAGER_URI=your_state_manager_uri
    EXOSPHERE_API_KEY=your_api_key
 
-   OPENAI_KEY=your_openai_key
-   OPENAI_ENDPOINT=your_openai_endpoint
+   # OpenAI Configuration
+   # Get your API key from https://platform.openai.com/api-keys
+   OPENAI_KEY=your_openai_key_here
+   # For Azure OpenAI, use your Azure endpoint URL
+   # For OpenAI, use https://api.openai.com/v1
+   OPENAI_ENDPOINT=https://api.openai.com/v1
 
-   AWS_SES_ACCESS_KEY=your_aws_ses_access_key
-   AWS_SES_SECRET_KEY=your_aws_ses_secret_key
-   AWS_SES_REGION=your_aws_ses_region
-   AWS_SES_REGION_ENDPOINT = your_aws_ses_region_endpoint
-   AWS_SES_EMAIL = 'from@this.email'
-   TO_EMAILS = 'to1@this.email,to2@this.email,toN@this.email'
+   # AWS SES Configuration (for email notifications)
+   # Get your AWS credentials from AWS IAM Console
+   AWS_SES_ACCESS_KEY=your_aws_ses_access_key_here
+   AWS_SES_SECRET_KEY=your_aws_ses_secret_key_here
+   # AWS region for SES (e.g., us-east-1, us-west-2, eu-west-1)
+   AWS_SES_REGION=us-east-1
+   # SES endpoint for your region (e.g., https://email.us-east-1.amazonaws.com)
+   AWS_SES_REGION_ENDPOINT=https://email.us-east-1.amazonaws.com
+   # Email address to send notifications from (must be verified in SES)
+   AWS_SES_EMAIL=from@yourdomain.com
+   # Comma-separated list of email addresses to receive notifications
+   TO_EMAILS=to1@yourdomain.com,to2@yourdomain.com
    ```
 
-   Replace `your_state_manager_uri`, `your_api_key`, and `your_mongo_connection_string` with your actual credentials.
+   Replace the placeholder values with your actual credentials.
 
 ## Contributing
 
