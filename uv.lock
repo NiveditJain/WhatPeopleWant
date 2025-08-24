@@ -173,15 +173,15 @@ wheels = [
 
 [[package]]
 name = "exospherehost"
-version = "0.0.7b9"
+version = "0.0.7b10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/73/2a/aeb7c1684ef7eea1fd6d8eba614568fc5beb7b4ee49c3368d2466f7125ff/exospherehost-0.0.7b9.tar.gz", hash = "sha256:782100557584c48bdf221e2dff4d071f358f23c39929cbcbc48b0a7c7d9cdd69", size = 27480, upload-time = "2025-08-23T12:27:54.867Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/51/e4/8a38c832f1c59a50f2009eb796c217409a7f3121785c108d82c31d1c97b3/exospherehost-0.0.7b10.tar.gz", hash = "sha256:481599348ac9be25ad82c13137b8e21bdbd5020e443ab7c59992430d44166f6c", size = 29156, upload-time = "2025-08-24T09:11:18.966Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cb/3a/5c703276a6f3239707720e3ad81bd060c69638161ce67966c22c96df8d93/exospherehost-0.0.7b9-py3-none-any.whl", hash = "sha256:62a7d030b4327da70bd2ff606b6ec149a36f0012e34ada0cc73e5ca5fd7f87fe", size = 15327, upload-time = "2025-08-23T12:27:54.089Z" },
+    { url = "https://files.pythonhosted.org/packages/50/21/448b46ac66bc1cff23cdaa0f2bbd4040ddf24b5a43db06abf318037813cf/exospherehost-0.0.7b10-py3-none-any.whl", hash = "sha256:c4043bb9bbecc9ece48d92f6615daadcfd509a5cee97494e7960a699eb653929", size = 15431, upload-time = "2025-08-24T09:11:17.781Z" },
 ]
 
 [[package]]
@@ -689,7 +689,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "boto3", specifier = ">=1.40.15" },
-    { name = "exospherehost", specifier = "==0.0.7b9" },
+    { name = "exospherehost", specifier = "==0.0.7b10" },
     { name = "openai", specifier = ">=1.100.2" },
     { name = "pymongo", specifier = ">=4.14.0" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
