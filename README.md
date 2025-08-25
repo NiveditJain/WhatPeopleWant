@@ -1,6 +1,24 @@
+<p align="center">
+  <a href="https://x.com/peoplewant_">
+    <img src="https://img.shields.io/twitter/follow/peoplewant_?style=social" alt="Follow on X">
+  </a>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/github/license/NiveditJain/WhatPeopleWant" alt="License">
+  </a>
+  <img src="https://img.shields.io/badge/Made%20with-Python-blue" alt="Made with Python">
+  <img src="https://img.shields.io/badge/Docker-Compose-blue" alt="Docker Compose">
+  <a href="https://github.com/exospherehost/exospherehost">
+    <img src="https://img.shields.io/badge/Built%20on-exosphere.host-4B77FF" alt="Built on Exosphere">
+  </a>
+</p>
+
 # WhatPeopleWant
-Agent to help builders find what to build (build on exosphere.host)
-WhatPeopleWant is an intelligent agent designed to help builders, makers, and entrepreneurs discover high-impact problems to solve, leveraging the power of [exosphere.host](https://exosphere.host).
+
+🚀 **Discover What People Actually Want**
+
+An AI-powered agent that scours Hacker News discussions to uncover real problems people are begging to have solved. Every 2 hours, we identify high-impact opportunities and share them on [X (Twitter)](https://x.com/peoplewant_) to help builders, makers, and entrepreneurs find their next big thing.
+
+**Built with ❤️ by builders, for builders** - Powered by [exosphere.host](https://exosphere.host)
 
 ## How It Works
 
