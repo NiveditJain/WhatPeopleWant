@@ -1,3 +1,7 @@
+# WhatPeopleWant
+
+🚀 **Discover What People Actually Want**
+
 <p align="center">
   <a href="https://x.com/peoplewant_">
     <img src="https://img.shields.io/twitter/follow/peoplewant_?style=social" alt="Follow on X">
@@ -11,10 +15,6 @@
     <img src="https://img.shields.io/badge/Built%20on-exosphere.host-4B77FF" alt="Built on Exosphere">
   </a>
 </p>
-
-# WhatPeopleWant
-
-🚀 **Discover What People Actually Want**
 
 An AI-powered agent that scours Hacker News discussions to uncover real problems people are begging to have solved. Every 2 hours, we identify high-impact opportunities and share them on [X (Twitter)](https://x.com/peoplewant_) to help builders, makers, and entrepreneurs find their next big thing.
 
