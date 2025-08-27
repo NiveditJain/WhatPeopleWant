@@ -23,7 +23,7 @@ class SendAnalysisNode(BaseNode):
             aws_secret_access_key=os.getenv("AWS_SES_SECRET_KEY"),
         )
 
-        self.inputs.insight += "\n Source: https://news.ycombinator.com/item?id=" + self.inputs.thread_id
+        self.inputs.insight += "\n Source: news[.]ycombinator[.]com/item?id=" + self.inputs.thread_id
         
         ses.send_email(
             Source=os.getenv("AWS_SES_EMAIL"),
