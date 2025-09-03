@@ -56,5 +56,5 @@ class FindHotThreadsNode(BaseNode):
         )).to_list()
         return [
             self.Outputs(thread_id=str(ancestor_id["_id"]))
-            for ancestor_id in hot_ancestor_ids
+            for ancestor_id in hot_ancestor_ids if ancestor_id["_id"] is not None
         ]
