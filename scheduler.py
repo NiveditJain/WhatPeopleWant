@@ -1,7 +1,6 @@
 import asyncio
-from exospherehost import StateManager, TriggerState
+from exospherehost import StateManager
 from dotenv import load_dotenv
-from datetime import time
 
 load_dotenv()
 
@@ -11,10 +10,7 @@ def trigger_scrape_hacker_news():
             namespace="WhatPeopleWant"
         ).trigger(
             graph_name="ScrapeYC",
-            state=TriggerState(
-                identifier="GetMaxItem",
-                inputs={}
-            )
+            start_delay=60
         )
     )
 

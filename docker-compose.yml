@@ -1,4 +1,4 @@
-version: "3.8"
+name: WhatPeopleWant
 
 services:
   mongodb:
@@ -17,7 +17,7 @@ services:
       - exosphere-network
 
   exosphere-state-manager:
-    image: ghcr.io/exospherehost/exosphere-state-manager:beta-latest
+    image: ghcr.io/exospherehost/exosphere-state-manager:latest
     container_name: whatpeoplewant-state-manager
     restart: unless-stopped
     environment:
@@ -33,7 +33,7 @@ services:
       - exosphere-network
 
   exosphere-dashboard:
-    image: ghcr.io/exospherehost/exosphere-dashboard:beta-latest
+    image: ghcr.io/exospherehost/exosphere-dashboard:latest
     container_name: whatpeoplewant-dashboard
     restart: unless-stopped
     environment:
