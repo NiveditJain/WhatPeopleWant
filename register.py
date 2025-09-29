@@ -1,5 +1,5 @@
 import asyncio
-from exospherehost import StateManager, GraphNodeModel, UnitesModel, UnitesStrategyEnum
+from exospherehost import StateManager, GraphNodeModel, UnitesModel, UnitesStrategyEnum, CronTrigger
 from nodes.add_database_pointer import AddDatabasePointerNode
 from nodes.generate_items import GenerateItemsNode
 from nodes.add_item_to_database import AddItemToDatabaseNode
@@ -15,6 +15,10 @@ load_dotenv()
 asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
     graph_name="ScrapeYC",
     secrets={},
+    triggers=[
+        CronTrigger(expression = "0 * * * *"),
+        CronTrigger(expression = "* * * * *")
+    ],
     graph_nodes=[
         GraphNodeModel(
             node_name=GetMaxItemNode.__name__,
