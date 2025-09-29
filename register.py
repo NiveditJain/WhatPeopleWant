@@ -16,8 +16,7 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
     graph_name="ScrapeYC",
     secrets={},
     triggers=[
-        CronTrigger(expression = "0 * * * *"),
-        CronTrigger(expression = "* * * * *")
+        CronTrigger(expression = "0 0 * * *")
     ],
     graph_nodes=[
         GraphNodeModel(

@@ -186,36 +186,6 @@ services:
     networks:
       - exosphere-network
 
-  # Scheduler service - runs scheduler.py after registration
-  scheduler:
-    build: .
-    container_name: whatpeoplewant-scheduler
-    restart: "no"
-    command: >
-      sh -c "
-        echo 'Waiting for registration to complete...' &&
-        sleep 60 &&
-        echo 'Running scheduler...' &&
-        uv run python scheduler.py
-      "
-    environment:
-      - MONGO_URI=mongodb://admin:password@mongodb:27017/exosphere?authSource=admin
-      - EXOSPHERE_STATE_MANAGER_URI=http://exosphere-state-manager:8000
-      - EXOSPHERE_API_KEY=exosphere@123
-      - OPENAI_KEY=${OPENAI_KEY}
-      - OPENAI_ENDPOINT=${OPENAI_ENDPOINT}
-      - AWS_SES_ACCESS_KEY=${AWS_SES_ACCESS_KEY}
-      - AWS_SES_SECRET_KEY=${AWS_SES_SECRET_KEY}
-      - AWS_SES_REGION=${AWS_SES_REGION}
-      - AWS_SES_REGION_ENDPOINT=${AWS_SES_REGION_ENDPOINT}
-      - AWS_SES_EMAIL=${AWS_SES_EMAIL}
-      - TO_EMAILS=${TO_EMAILS}
-    depends_on:
-      - register
-      - exosphere-state-manager
-    networks:
-      - exosphere-network
-
 volumes:
   mongodb_data:
     driver: local
