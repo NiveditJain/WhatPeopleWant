@@ -110,39 +110,6 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
             identifier="GenerateThread",
             namespace="WhatPeopleWant",
             inputs={
-                "start_id": "${{AddDatabasePointer.outputs.start_id}}",
-                "end_id": "${{AddDatabasePointer.outputs.end_id}}"
-            },
-            next_nodes=[
-                "FetchKeywords"
-            ]
-        ),
-        GraphNodeModel(
-            node_name=FetchKeywordsNode.__name__,
-            identifier="FetchKeywords",
-            namespace="WhatPeopleWant",
-            inputs={},
-            next_nodes=[
-                "GenerateThread"
-            ]
-        ),
-        # GraphNodeModel(
-        #     node_name=FindHotThreadsNode.__name__,
-        #     identifier="FindHotThreads",
-        #     namespace="WhatPeopleWant",
-        #     inputs={
-        #         "start_id": "${{AddDatabasePointer.outputs.start_id}}",
-        #         "end_id": "${{AddDatabasePointer.outputs.end_id}}"
-        #     },
-        #     next_nodes=[
-        #         "GenerateThread"
-        #     ]
-        # ),
-        GraphNodeModel(
-            node_name=GenerateThreadNode.__name__,
-            identifier="GenerateThread",
-            namespace="WhatPeopleWant",
-            inputs={
                 "thread_id": "${{FindHotThreads.outputs.thread_id}}"
             },
             next_nodes=[
