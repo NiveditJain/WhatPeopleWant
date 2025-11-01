@@ -10,7 +10,6 @@ from nodes.find_hot_threads import FindHotThreadsNode
 from nodes.generate_thread import GenerateThreadNode
 from nodes.generate_insight import GenerateInsightNode
 from nodes.engage_with_thread import EngageWithThreadNode
-from nodes.send_analysis import SendAnalysisNode
 from nodes.get_updated_ancestors import GetUpdatedAncestorsNode
 from dotenv import load_dotenv
 
@@ -85,6 +84,16 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
         GraphNodeModel(
             node_name=GetUpdatedAncestorsNode.__name__,
             identifier="GetUpdatedAncestors",
+            namespace="WhatPeopleWant",
+            inputs={
+                "start_id": "${{AddDatabasePointer.outputs.start_id}}",
+                "end_id": "${{AddDatabasePointer.outputs.end_id}}"
+            },
+            next_nodes=[
+                "FetchKeywords"
+            ]
+        ),
+        GraphNodeModel(
             node_name=FetchKeywordsNode.__name__,
             identifier="FetchKeywords",
             namespace="WhatPeopleWant",
@@ -93,24 +102,12 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
                 "GenerateThread"
             ]
         ),
-        # GraphNodeModel(
-        #     node_name=FindHotThreadsNode.__name__,
-        #     identifier="FindHotThreads",
-        #     namespace="WhatPeopleWant",
-        #     inputs={
-        #         "start_id": "${{AddDatabasePointer.outputs.start_id}}",
-        #         "end_id": "${{AddDatabasePointer.outputs.end_id}}"
-        #     },
-        #     next_nodes=[
-        #         "GenerateThread"
-        #     ]
-        # ),
         GraphNodeModel(
             node_name=GenerateThreadNode.__name__,
             identifier="GenerateThread",
             namespace="WhatPeopleWant",
             inputs={
-                "thread_id": "${{FindHotThreads.outputs.thread_id}}"
+                "thread_id": "${{GetUpdatedAncestors.outputs.ancestor_id}}"              
             },
             next_nodes=[
                 "GenerateInsight"
@@ -137,18 +134,6 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
                 "thread_id": "${{GenerateInsight.outputs.thread_id}}",
                 "relevance_score": "${{GenerateInsight.outputs.relevance_score}}",
                 "keywords": "${{FetchKeywords.outputs.keywords}}"
-            },
-            next_nodes=[
-                "SendAnalysis"
-            ]
-        ),
-        GraphNodeModel(
-            node_name=SendAnalysisNode.__name__,
-            identifier="SendAnalysis",
-            namespace="WhatPeopleWant",
-            inputs={
-                "insight": "${{GenerateInsight.outputs.insight}}",
-                "thread_id": "${{GenerateInsight.outputs.thread_id}}"
             },
             next_nodes=[]
         )

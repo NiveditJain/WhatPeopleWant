@@ -1,13 +1,12 @@
 import os
 import openai
+# from browser_use import Agent, Browser, ChatOpenAI, sandbox
+from browser_use_sdk import BrowserUse
 from dotenv import load_dotenv
 from exospherehost import BaseNode, PruneSignal
 from pydantic import BaseModel
 
 load_dotenv()
-
-
-from browseruse import Agent, Browser, ChatOpenAI, BrowserConfig
 
 
 PRODUCT_MESSAGING_PROMPT = """You are crafting a reply to a Hacker News thread that is relevant to our product/keywords.
@@ -33,16 +32,17 @@ Respond with ONLY the reply text, nothing else. Keep it concise and valuable (2-
 class EngageWithThreadNode(BaseNode):
     class Inputs(BaseModel):
         thread_id: str
-        relevance_score: float
-        keywords: list[str]
+        relevance_score: str
+        keywords: str
     
     class Outputs(BaseModel):
-        reply_sent: bool
+        reply_sent: str
         thread_id: str
+        browseruse_output: str
 
     async def execute(self) -> Outputs:
         # Check if relevance score is above threshold
-        if self.inputs.relevance_score <= 0.5:
+        if int(self.inputs.relevance_score) <= 1:
             raise PruneSignal()
         
         # Get thread data to understand context
@@ -71,13 +71,13 @@ class EngageWithThreadNode(BaseNode):
         )
         
         reply_prompt = PRODUCT_MESSAGING_PROMPT.format(
-            keywords="\n".join(f"- {keyword}" for keyword in self.inputs.keywords),
+            keywords=self.inputs.keywords,
             thread_context=thread_context,
-            thread_text=thread_text[:1000]  # Limit to first 1000 chars
+            thread_text=thread_text
         )
         
         reply_response = await openai_client.chat.completions.create(
-            model="openai-gpt-oss-120b",
+            model="gpt-5",
             messages=[
                 {
                     "role": "user",
@@ -88,25 +88,27 @@ class EngageWithThreadNode(BaseNode):
         
         reply_text = reply_response.choices[0].message.content.strip()
         
-        # Use browseruse to navigate to HN and reply
         hn_url = f"https://news.ycombinator.com/item?id={thread_id}"
 
-        browser = Browser(headless=False)
-    
-        agent = Agent(
-            task=f"""
-            1. Go to {hn_url}
-            2. Find the reply box
-            3. Type this comment: {reply_text}
-            4. Submit the comment
-            """,
-            browser=browser,
-            llm=ChatOpenAI(model="gpt-4o-mini")
-        )
-        await agent.run()      
+        try:
+            client = BrowserUse(api_key=os.getenv("BROWSER_USE_API_KEY"))
+            task = client.tasks.create_task(
+                task=f"""
+                1. Go to {hn_url}
+                2. Find the reply box
+                3. Type this comment: {reply_text}
+                4. Submit the comment
+
+                Use the following credentials to login: id: whatpeoplewant and password: {os.getenv("HN_PASSWORD")}
+                """,
+                llm="browser-use-llm"
+            )
+            result = task.complete()
+        except Exception as e:
+            print(result.output)
+            print(e)
         
         return self.Outputs(
-            reply_sent=True,
-            thread_id=str(thread_id)
+            reply_sent=str(True),
+            thread_id=str(thread_id),
         )
-

@@ -18,6 +18,7 @@ RUN pip install uv
 # Install Python dependencies using uv
 RUN uv sync --frozen
 RUN uvx browser-use install
+RUN uvx playwright install chrome
 
 # Copy application code
 COPY . .

@@ -15,7 +15,7 @@ class GenerateThreadNode(BaseNode):
     
     class Outputs(BaseModel):
         thread_id: str
-        message: Dict[str, Any]
+        message: str
 
     async def execute(self) -> Outputs:
         client = get_mongo_client()
@@ -87,6 +87,6 @@ class GenerateThreadNode(BaseNode):
 
         return self.Outputs(
             thread_id=str(thread_id),
-            message=message
+            message=json.dumps(message)
         )
 

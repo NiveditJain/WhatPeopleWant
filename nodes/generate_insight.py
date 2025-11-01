@@ -31,22 +31,22 @@ RELEVANCE_PROMPT = """You are evaluating whether a message is relevant to a give
 **Message:**
 {message}
 
-Rate the relevance of the message to the keywords on a scale of 0.0 to 1.0, where:
-- 0.0 means completely irrelevant
-- 0.5 means somewhat relevant
-- 1.0 means highly relevant
+Rate the relevance of the message to the keywords on a scale of 0 to 10, where:
+- 0 means completely irrelevant
+- 5 means somewhat relevant
+- 10 means highly relevant
 
-Respond with ONLY a decimal number between 0.0 and 1.0, nothing else."""
+Respond with ONLY an integer between 0 and 10, nothing else."""
 
 class GenerateInsightNode(BaseNode):
     class Inputs(BaseModel):
         thread_id: str
-        message: Dict[str, Any]
-        keywords: List[str]
+        message: str
+        keywords: str
     
     class Outputs(BaseModel):
         thread_id: str
-        relevance_score: float
+        relevance_score: str
 
     async def execute(self) -> Outputs:
 
@@ -66,11 +66,11 @@ class GenerateInsightNode(BaseNode):
 
         # Check relevance of the insight to the keywords
         relevance_prompt = RELEVANCE_PROMPT.format(
-            keywords="\n".join(f"- {keyword}" for keyword in self.inputs.keywords),
-            message=generate_prompt(self.inputs.message)
+            keywords=self.inputs.keywords,
+            message=self.inputs.message
         )
         relevance_response = await client.chat.completions.create(
-            model="openai-gpt-oss-120b",
+            model="gpt-5",
             messages=[
                 {
                     "role": "user",
@@ -82,14 +82,14 @@ class GenerateInsightNode(BaseNode):
         # Parse the relevance score
         relevance_text = relevance_response.choices[0].message.content.strip()
         try:
-            relevance_score = float(relevance_text)
+            relevance_score = int(relevance_text)
             # Clamp score between 0.0 and 1.0
-            relevance_score = max(0.0, min(1.0, relevance_score))
+            relevance_score = max(0, min(10, relevance_score))
         except ValueError:
             # If parsing fails, default to 0.0
-            relevance_score = 0.0
+            relevance_score = 0
 
         return self.Outputs(
-            thread_id=self.inputs.thread_id,
-            relevance_score=relevance_score
+            thread_id=str(self.inputs.thread_id),
+            relevance_score=str(relevance_score)
         )
