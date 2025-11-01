@@ -1,14 +1,10 @@
 import openai
 import os
 import json
+from typing import List, Dict, Any
 
 from exospherehost import BaseNode
 from pydantic import BaseModel
-from .utils import get_mongo_client
-
-
-DATABASE_NAME = "WhatPeopleWant"
-COLLECTION_NAME = "items"
 
 PROMPT = """Consider yourself a VC analyst, you have only one job to study HackerNews portal and understand what people want and what you suggest entrepreneurs.  
 
@@ -27,93 +23,73 @@ Do not use long dashes — and emojis.
 def generate_prompt(message):
     return PROMPT.format(conversation=json.dumps(message, indent=2, ensure_ascii=False))
 
+RELEVANCE_PROMPT = """You are evaluating whether a message is relevant to a given list of keywords.
+
+**Keywords:**
+{keywords}
+
+**Message:**
+{message}
+
+Rate the relevance of the message to the keywords on a scale of 0.0 to 1.0, where:
+- 0.0 means completely irrelevant
+- 0.5 means somewhat relevant
+- 1.0 means highly relevant
+
+Respond with ONLY a decimal number between 0.0 and 1.0, nothing else."""
+
 class GenerateInsightNode(BaseNode):
     class Inputs(BaseModel):
         thread_id: str
+        message: Dict[str, Any]
+        keywords: List[str]
     
     class Outputs(BaseModel):
-        insight: str
         thread_id: str
+        relevance_score: float
 
     async def execute(self) -> Outputs:
-        client = get_mongo_client()
-        db = client[DATABASE_NAME]
-        collection = db[COLLECTION_NAME]
-
-        thread_id = int(self.inputs.thread_id)
-        thread_data = await(await collection.aggregate(
-            [
-                {
-                    "$match": {
-                        "item_id": thread_id
-                    }
-                },
-                {
-                    "$graphLookup": {
-                        "from": COLLECTION_NAME,
-                        "startWith": "$kids",
-                        "connectFromField": "kids",
-                        "connectToField": "item_id",
-                        "as": "replies",
-                        "depthField": "level"
-                    }
-                },
-                {
-                    "$project": {
-                        "_id": 0,
-                        "item_id": 1,
-                        "text": 1,
-                        "kids": 1,
-                        "title": 1,
-                        "replies.item_id": 1,
-                        "replies.text": 1,
-                        "replies.title": 1,
-                        "replies.level": 1,
-                        "replies.kids": 1
-                    }
-                }
-            ]
-        )).to_list()
-
-        look_up_table = {}
-        for item in thread_data[0]["replies"]:
-            look_up_table[item["item_id"]] = item
-
-        look_up_table[thread_id] = thread_data[0].copy()
-        look_up_table[thread_id].pop("replies")
-
-        def dfs(item_id):
-            if item_id not in look_up_table:
-                return {}
-                
-            item = look_up_table[item_id]
-            message = {
-                "text": item["text"] if "text" in item else item["title"] if "title" in item else None
-            }
-
-            replies = []
-            if "kids" in item:
-                for reply in item["kids"]:
-                    replies.append(dfs(reply))
-                    
-            if len(replies) > 0:
-                message["replies"] = replies
-                    
-            return message
-
-        message = dfs(thread_id)
 
         client = openai.AsyncOpenAI(
-            api_key=os.getenv("OPENAI_KEY"),
-            base_url=os.getenv("OPENAI_ENDPOINT")
+            api_key=os.getenv("OPENAI_API_KEY")
         )
-        reponse = await client.chat.completions.create(
+        # reponse = await client.chat.completions.create(
+        #     model="openai-gpt-oss-120b",
+        #     messages=[
+        #         {
+        #             "role": "user",
+        #             "content": generate_prompt(self.inputs.message)
+        #         }
+        #     ]
+        # )
+        # insight = reponse.choices[0].message.content
+
+        # Check relevance of the insight to the keywords
+        relevance_prompt = RELEVANCE_PROMPT.format(
+            keywords="\n".join(f"- {keyword}" for keyword in self.inputs.keywords),
+            message=generate_prompt(self.inputs.message)
+        )
+        relevance_response = await client.chat.completions.create(
             model="openai-gpt-oss-120b",
             messages=[
                 {
                     "role": "user",
-                    "content": generate_prompt(message)
+                    "content": relevance_prompt
                 }
             ]
         )
-        return self.Outputs(insight=reponse.choices[0].message.content, thread_id=str(thread_id))
+        
+        # Parse the relevance score
+        relevance_text = relevance_response.choices[0].message.content.strip()
+        try:
+            relevance_score = float(relevance_text)
+            # Clamp score between 0.0 and 1.0
+            relevance_score = max(0.0, min(1.0, relevance_score))
+        except ValueError:
+            # If parsing fails, default to 0.0
+            relevance_score = 0.0
+
+        return self.Outputs(
+            thread_id=self.inputs.thread_id,
+            relevance_score=relevance_score
+        )

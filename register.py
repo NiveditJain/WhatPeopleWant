@@ -5,8 +5,11 @@ from nodes.generate_items import GenerateItemsNode
 from nodes.add_item_to_database import AddItemToDatabaseNode
 from nodes.get_max_item import GetMaxItemNode
 from nodes.add_ancestor_id import AddAncestorIdNode
+from nodes.fetch_keywords import FetchKeywordsNode
 from nodes.find_hot_threads import FindHotThreadsNode
+from nodes.generate_thread import GenerateThreadNode
 from nodes.generate_insight import GenerateInsightNode
+from nodes.engage_with_thread import EngageWithThreadNode
 from nodes.send_analysis import SendAnalysisNode
 from dotenv import load_dotenv
 
@@ -71,7 +74,7 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
                 "end_id": "${{AddDatabasePointer.outputs.end_id}}"
             },
             next_nodes=[
-                "FindHotThreads"
+                "FetchKeywords"
             ],
             unites=UnitesModel(
                 identifier="AddDatabasePointer",
@@ -79,12 +82,32 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
             )
         ),
         GraphNodeModel(
-            node_name=FindHotThreadsNode.__name__,
-            identifier="FindHotThreads",
+            node_name=FetchKeywordsNode.__name__,
+            identifier="FetchKeywords",
+            namespace="WhatPeopleWant",
+            inputs={},
+            next_nodes=[
+                "GenerateThread"
+            ]
+        ),
+        # GraphNodeModel(
+        #     node_name=FindHotThreadsNode.__name__,
+        #     identifier="FindHotThreads",
+        #     namespace="WhatPeopleWant",
+        #     inputs={
+        #         "start_id": "${{AddDatabasePointer.outputs.start_id}}",
+        #         "end_id": "${{AddDatabasePointer.outputs.end_id}}"
+        #     },
+        #     next_nodes=[
+        #         "GenerateThread"
+        #     ]
+        # ),
+        GraphNodeModel(
+            node_name=GenerateThreadNode.__name__,
+            identifier="GenerateThread",
             namespace="WhatPeopleWant",
             inputs={
-                "start_id": "${{AddDatabasePointer.outputs.start_id}}",
-                "end_id": "${{AddDatabasePointer.outputs.end_id}}"
+                "thread_id": "${{FindHotThreads.outputs.thread_id}}"
             },
             next_nodes=[
                 "GenerateInsight"
@@ -95,7 +118,22 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
             identifier="GenerateInsight",
             namespace="WhatPeopleWant",
             inputs={
-                "thread_id": "${{FindHotThreads.outputs.thread_id}}"
+                "thread_id": "${{GenerateThread.outputs.thread_id}}",
+                "message": "${{GenerateThread.outputs.message}}",
+                "keywords": "${{FetchKeywords.outputs.keywords}}"
+            },
+            next_nodes=[
+                "EngageWithThread"
+            ]
+        ),
+        GraphNodeModel(
+            node_name=EngageWithThreadNode.__name__,
+            identifier="EngageWithThread",
+            namespace="WhatPeopleWant",
+            inputs={
+                "thread_id": "${{GenerateInsight.outputs.thread_id}}",
+                "relevance_score": "${{GenerateInsight.outputs.relevance_score}}",
+                "keywords": "${{FetchKeywords.outputs.keywords}}"
             },
             next_nodes=[
                 "SendAnalysis"
