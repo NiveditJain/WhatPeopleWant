@@ -17,6 +17,7 @@ RUN pip install uv
 
 # Install Python dependencies using uv
 RUN uv sync --frozen
+RUN uvx browser-use install
 
 # Copy application code
 COPY . .
