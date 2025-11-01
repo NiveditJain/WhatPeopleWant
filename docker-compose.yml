@@ -23,7 +23,7 @@ services:
     environment:
       - MONGO_URI=mongodb://admin:password@mongodb:27017/exosphere?authSource=admin
       - STATE_MANAGER_SECRET=exosphere@123
-      - MONGO_DATABASE_NAME=exosphere-yc-agent-mail
+      - MONGO_DATABASE_NAME=exosphere-agent-mail-hackathon
       - SECRETS_ENCRYPTION_KEY="YTzpUlBGLSwm-3yKJRJTZnb0_aQuQQHyz64s8qAERVU="
     depends_on:
       - mongodb

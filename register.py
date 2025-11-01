@@ -1,5 +1,5 @@
 import asyncio
-from exospherehost import StateManager, GraphNodeModel, UnitesModel, UnitesStrategyEnum, CronTrigger
+from exospherehost import StateManager, GraphNodeModel, UnitesModel, UnitesStrategyEnum, CronTrigger, RetryPolicyModel, RetryStrategyEnum
 from nodes.add_database_pointer import AddDatabasePointerNode
 from nodes.generate_items import GenerateItemsNode
 from nodes.add_item_to_database import AddItemToDatabaseNode
@@ -21,6 +21,13 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
     triggers=[
         CronTrigger(expression = "0 0 * * *")
     ],
+    retry_policy=RetryPolicyModel(
+        strategy=RetryStrategyEnum.EXPONENTIAL_FULL_JITTER,
+        max_retries=10,
+        backoff_factor=1000,
+        exponent=3,
+        max_delay=30000
+    ),
     graph_nodes=[
         GraphNodeModel(
             node_name=GetMaxItemNode.__name__,

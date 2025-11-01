@@ -38,11 +38,10 @@ class EngageWithThreadNode(BaseNode):
     class Outputs(BaseModel):
         reply_sent: str
         thread_id: str
-        browseruse_output: str
 
     async def execute(self) -> Outputs:
         # Check if relevance score is above threshold
-        if int(self.inputs.relevance_score) <= 1:
+        if int(self.inputs.relevance_score) <= 4:
             raise PruneSignal()
         
         # Get thread data to understand context
@@ -90,23 +89,19 @@ class EngageWithThreadNode(BaseNode):
         
         hn_url = f"https://news.ycombinator.com/item?id={thread_id}"
 
-        try:
-            client = BrowserUse(api_key=os.getenv("BROWSER_USE_API_KEY"))
-            task = client.tasks.create_task(
-                task=f"""
-                1. Go to {hn_url}
-                2. Find the reply box
-                3. Type this comment: {reply_text}
-                4. Submit the comment
+        client = BrowserUse(api_key=os.getenv("BROWSER_USE_API_KEY"))
+        task = client.tasks.create_task(
+            task=f"""
+            1. Go to {hn_url}
+            2. Find the reply box
+            3. Type this comment: {reply_text}
+            4. Submit the comment
 
-                Use the following credentials to login: id: whatpeoplewant and password: {os.getenv("HN_PASSWORD")}
-                """,
-                llm="browser-use-llm"
-            )
-            result = task.complete()
-        except Exception as e:
-            print(result.output)
-            print(e)
+            Use the following credentials to login: id: whatpeoplewant and password: {os.getenv("HN_PASSWORD")}
+            """,
+            llm="browser-use-llm"
+        )
+        result = task.complete()
         
         return self.Outputs(
             reply_sent=str(True),
