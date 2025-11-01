@@ -11,6 +11,7 @@ from nodes.generate_thread import GenerateThreadNode
 from nodes.generate_insight import GenerateInsightNode
 from nodes.engage_with_thread import EngageWithThreadNode
 from nodes.send_analysis import SendAnalysisNode
+from nodes.get_updated_ancestors import GetUpdatedAncestorsNode
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -74,12 +75,47 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
                 "end_id": "${{AddDatabasePointer.outputs.end_id}}"
             },
             next_nodes=[
-                "FetchKeywords"
+                "GetUpdatedAncestors"
             ],
             unites=UnitesModel(
                 identifier="AddDatabasePointer",
                 strategy=UnitesStrategyEnum.ALL_DONE
             )
+        ),
+        GraphNodeModel(
+            node_name=GetUpdatedAncestorsNode.__name__,
+            identifier="GetUpdatedAncestors",
+            node_name=FetchKeywordsNode.__name__,
+            identifier="FetchKeywords",
+            namespace="WhatPeopleWant",
+            inputs={},
+            next_nodes=[
+                "GenerateThread"
+            ]
+        ),
+        # GraphNodeModel(
+        #     node_name=FindHotThreadsNode.__name__,
+        #     identifier="FindHotThreads",
+        #     namespace="WhatPeopleWant",
+        #     inputs={
+        #         "start_id": "${{AddDatabasePointer.outputs.start_id}}",
+        #         "end_id": "${{AddDatabasePointer.outputs.end_id}}"
+        #     },
+        #     next_nodes=[
+        #         "GenerateThread"
+        #     ]
+        # ),
+        GraphNodeModel(
+            node_name=GenerateThreadNode.__name__,
+            identifier="GenerateThread",
+            namespace="WhatPeopleWant",
+            inputs={
+                "start_id": "${{AddDatabasePointer.outputs.start_id}}",
+                "end_id": "${{AddDatabasePointer.outputs.end_id}}"
+            },
+            next_nodes=[
+                "FetchKeywords"
+            ]
         ),
         GraphNodeModel(
             node_name=FetchKeywordsNode.__name__,

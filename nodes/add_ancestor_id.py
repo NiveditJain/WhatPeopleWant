@@ -15,7 +15,7 @@ class AddAncestorIdNode(BaseNode):
 
     async def execute(self) -> Outputs:
         client = get_mongo_client()
-        await client[DATABASE_NAME][COLLECTION_NAME].aggregate(
+        data = await client[DATABASE_NAME][COLLECTION_NAME].aggregate(
             [
                 {
                     "$match": {
@@ -76,3 +76,4 @@ class AddAncestorIdNode(BaseNode):
                 }
             ]
         )
+        return self.Outputs()

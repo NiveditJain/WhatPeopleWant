@@ -11,6 +11,7 @@ from nodes.generate_insight import GenerateInsightNode
 from nodes.engage_with_thread import EngageWithThreadNode
 from nodes.find_hot_threads import FindHotThreadsNode
 from nodes.send_analysis import SendAnalysisNode
+from nodes.get_updated_ancestors import GetUpdatedAncestorsNode
 
 Runtime(
     namespace="WhatPeopleWant",
@@ -27,5 +28,6 @@ Runtime(
         GenerateInsightNode,
         EngageWithThreadNode,
         SendAnalysisNode,
+        GetUpdatedAncestorsNode,
     ]
 ).start()
