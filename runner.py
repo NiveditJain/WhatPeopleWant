@@ -8,6 +8,7 @@ from nodes.add_ancestor_id import AddAncestorIdNode
 from nodes.generate_insight import GenerateInsightNode
 from nodes.find_hot_threads import FindHotThreadsNode
 from nodes.send_analysis import SendAnalysisNode
+from nodes.get_updated_ancestors import GetUpdatedAncestorsNode
 
 Runtime(
     namespace="WhatPeopleWant",
@@ -18,8 +19,6 @@ Runtime(
         AddItemToDatabaseNode,
         GetMaxItemNode,
         AddAncestorIdNode,
-        FindHotThreadsNode,
-        GenerateInsightNode,
-        SendAnalysisNode,
+        GetUpdatedAncestorsNode,
     ]
 ).start()

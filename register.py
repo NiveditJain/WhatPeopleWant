@@ -8,6 +8,7 @@ from nodes.add_ancestor_id import AddAncestorIdNode
 from nodes.find_hot_threads import FindHotThreadsNode
 from nodes.generate_insight import GenerateInsightNode
 from nodes.send_analysis import SendAnalysisNode
+from nodes.get_updated_ancestors import GetUpdatedAncestorsNode
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -70,44 +71,19 @@ asyncio.run(StateManager(namespace="WhatPeopleWant").upsert_graph(
                 "start_id": "${{AddDatabasePointer.outputs.start_id}}",
                 "end_id": "${{AddDatabasePointer.outputs.end_id}}"
             },
-            next_nodes=[
-                "FindHotThreads"
-            ],
+            next_nodes=["GetUpdatedAncestors"],
             unites=UnitesModel(
                 identifier="AddDatabasePointer",
                 strategy=UnitesStrategyEnum.ALL_DONE
             )
         ),
         GraphNodeModel(
-            node_name=FindHotThreadsNode.__name__,
-            identifier="FindHotThreads",
+            node_name=GetUpdatedAncestorsNode.__name__,
+            identifier="GetUpdatedAncestors",
             namespace="WhatPeopleWant",
             inputs={
                 "start_id": "${{AddDatabasePointer.outputs.start_id}}",
                 "end_id": "${{AddDatabasePointer.outputs.end_id}}"
-            },
-            next_nodes=[
-                "GenerateInsight"
-            ]
-        ),
-        GraphNodeModel(
-            node_name=GenerateInsightNode.__name__,
-            identifier="GenerateInsight",
-            namespace="WhatPeopleWant",
-            inputs={
-                "thread_id": "${{FindHotThreads.outputs.thread_id}}"
-            },
-            next_nodes=[
-                "SendAnalysis"
-            ]
-        ),
-        GraphNodeModel(
-            node_name=SendAnalysisNode.__name__,
-            identifier="SendAnalysis",
-            namespace="WhatPeopleWant",
-            inputs={
-                "insight": "${{GenerateInsight.outputs.insight}}",
-                "thread_id": "${{GenerateInsight.outputs.thread_id}}"
             },
             next_nodes=[]
         )

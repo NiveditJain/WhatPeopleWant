@@ -23,7 +23,7 @@ services:
     environment:
       - MONGO_URI=mongodb://admin:password@mongodb:27017/exosphere?authSource=admin
       - STATE_MANAGER_SECRET=exosphere@123
-      - MONGO_DATABASE_NAME=exosphere
+      - MONGO_DATABASE_NAME=exosphere-yc-agent-mail
       - SECRETS_ENCRYPTION_KEY="YTzpUlBGLSwm-3yKJRJTZnb0_aQuQQHyz64s8qAERVU="
     depends_on:
       - mongodb
@@ -153,6 +153,50 @@ services:
     networks:
       - exosphere-network
 
+  runner-5:
+    build: .
+    container_name: whatpeoplewant-runner-5
+    restart: unless-stopped
+    environment:
+      - MONGO_URI=mongodb://admin:password@mongodb:27017/exosphere?authSource=admin
+      - EXOSPHERE_STATE_MANAGER_URI=http://exosphere-state-manager:8000
+      - EXOSPHERE_API_KEY=exosphere@123
+      - OPENAI_KEY=${OPENAI_KEY}
+      - OPENAI_ENDPOINT=${OPENAI_ENDPOINT}
+      - AWS_SES_ACCESS_KEY=${AWS_SES_ACCESS_KEY}
+      - AWS_SES_SECRET_KEY=${AWS_SES_SECRET_KEY}
+      - AWS_SES_REGION=${AWS_SES_REGION}
+      - AWS_SES_REGION_ENDPOINT=${AWS_SES_REGION_ENDPOINT}
+      - AWS_SES_EMAIL=${AWS_SES_EMAIL}
+      - TO_EMAILS=${TO_EMAILS}
+    depends_on:
+      wait-for-state-manager:
+        condition: service_completed_successfully
+    networks:
+      - exosphere-network
+
+  runner-6:
+    build: .
+    container_name: whatpeoplewant-runner-6
+    restart: unless-stopped
+    environment:
+      - MONGO_URI=mongodb://admin:password@mongodb:27017/exosphere?authSource=admin
+      - EXOSPHERE_STATE_MANAGER_URI=http://exosphere-state-manager:8000
+      - EXOSPHERE_API_KEY=exosphere@123
+      - OPENAI_KEY=${OPENAI_KEY}
+      - OPENAI_ENDPOINT=${OPENAI_ENDPOINT}
+      - AWS_SES_ACCESS_KEY=${AWS_SES_ACCESS_KEY}
+      - AWS_SES_SECRET_KEY=${AWS_SES_SECRET_KEY}
+      - AWS_SES_REGION=${AWS_SES_REGION}
+      - AWS_SES_REGION_ENDPOINT=${AWS_SES_REGION_ENDPOINT}
+      - AWS_SES_EMAIL=${AWS_SES_EMAIL}
+      - TO_EMAILS=${TO_EMAILS}
+    depends_on:
+      wait-for-state-manager:
+        condition: service_completed_successfully
+    networks:
+      - exosphere-network
+
   # Registration service - runs register.py after all runners are up
   register:
     build: .
@@ -182,6 +226,37 @@ services:
       - runner-2
       - runner-3
       - runner-4
+      - runner-5
+      - runner-6
+      - exosphere-state-manager
+    networks:
+      - exosphere-network
+
+  scheduler:
+    build: .
+    container_name: whatpeoplewant-scheduler
+    restart: "no"
+    command: >
+      sh -c "
+        echo 'Waiting for registration to complete...' &&
+        sleep 60 &&
+        echo 'Running scheduler...' &&
+        uv run python scheduler.py
+      "
+    environment:
+      - MONGO_URI=mongodb://admin:password@mongodb:27017/exosphere?authSource=admin
+      - EXOSPHERE_STATE_MANAGER_URI=http://exosphere-state-manager:8000
+      - EXOSPHERE_API_KEY=exosphere@123
+      - OPENAI_KEY=${OPENAI_KEY}
+      - OPENAI_ENDPOINT=${OPENAI_ENDPOINT}
+      - AWS_SES_ACCESS_KEY=${AWS_SES_ACCESS_KEY}
+      - AWS_SES_SECRET_KEY=${AWS_SES_SECRET_KEY}
+      - AWS_SES_REGION=${AWS_SES_REGION}
+      - AWS_SES_REGION_ENDPOINT=${AWS_SES_REGION_ENDPOINT}
+      - AWS_SES_EMAIL=${AWS_SES_EMAIL}
+      - TO_EMAILS=${TO_EMAILS}
+    depends_on:
+      - register
       - exosphere-state-manager
     networks:
       - exosphere-network
